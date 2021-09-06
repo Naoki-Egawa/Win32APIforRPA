@@ -56,8 +56,7 @@ namespace Win32APIforRPA
                 string WindowTitle = "給付－レセプトエラー訂正・削除";
                 string ButtonClass = "ThunderRT6CommandButton";
 
-                var data = new SunEDM().T_04_レセプトエラーリスト資格情報.OrderBy(x => x.ID).Skip(skipNumber);
-                var robot = new C_RobotKanyusyaMaster();
+                var data = //訂正するエラーデータのコレクション
 
                 foreach (var item in data)
                 {
@@ -100,24 +99,20 @@ namespace Win32APIforRPA
                         {
 
 
-                            //Win32API.WindowButtonClickKyouseiTeisei(WindowTitle, ButtonClass).ConfigureAwait(false);
-
                             //★強制訂正
                             var bt = Win32API.GetTargetControl("給付－レセプトエラー訂正・削除", "ThunderRT6CommandButton", 16);
                             Win32API.ButtonClick(bt).ConfigureAwait(false);
 
-                            //WindowsHandleAPI.ExecuteButtonClick("給付－レセプトエラー訂正・削除", "強制訂正").ConfigureAwait(false);
+
 
                             pMessage = $"【{item.エラー内容}】{item.記号} - {item.番号} {item.氏名_漢字}　⇒　エラーなしのため強制訂正しました";
                         }
                         else if (item.再審査申出理由コード.Contains("返納金"))
                         {
-                            //Win32API.WindowButtonClickErroTositeTeisei(WindowTitle, ButtonClass).ConfigureAwait(false);
 
                             //★エラーとして訂正
                             var bt = Win32API.GetTargetControl("給付－レセプトエラー訂正・削除", "ThunderRT6CommandButton", 15);
                             Win32API.ButtonClick(bt).ConfigureAwait(false);
-                            //WindowsHandleAPI.ExecuteButtonClick("給付－レセプトエラー訂正・削除", "エラーとして訂正").ConfigureAwait(false);
 
                             pMessage = $"【{item.エラー内容}】{item.記号} - {item.番号} {item.氏名_漢字}　⇒　喪失後受診が含まれているため、返納金（疑）としてエラーとして訂正しました";
 
@@ -127,7 +122,7 @@ namespace Win32APIforRPA
 
                             if (item.再審査申出理由コード.Contains("100018"))
                             {
-                                var c = new RPA_saisinsa();
+                                var c = new RunSaisinsaEntry();
                                 c.TitleName = "給付－レセプトエラー訂正・削除";
                                 c.SaisinsaTouroku("");
 
@@ -136,7 +131,7 @@ namespace Win32APIforRPA
                             }
                             else if (item.再審査申出理由コード.Contains("100016"))
                             {
-                                var c = new RPA_saisinsa();
+                                var c = new RunSaisinsaEntry();
                                 c.TitleName = "給付－レセプトエラー訂正・削除";
                                 c.SaisinsaTouroku("", "100016", "資格取得（認定）日以前の受診分です。");
 
@@ -154,7 +149,6 @@ namespace Win32APIforRPA
                         }
                         else
                         {
-                            //Win32API.WindowButtonClickNext(WindowTitle, ButtonClass).ConfigureAwait(false);
                             var next = Win32API.GetTargetControl("給付－レセプトエラー訂正・削除", "ThunderRT6CommandButton", 2);
                             Win32API.ButtonClick(next).ConfigureAwait(false);
                             pMessage = $"【{item.エラー内容}】{item.記号} - {item.番号} {item.氏名_漢字}　⇒　紙レセプト等のため資格確認ができませんでした、目視で訂正ください";
@@ -176,7 +170,6 @@ namespace Win32APIforRPA
                         }
                         else if (item.再審査申出理由コード == "エラー判定不可能" | string.IsNullOrEmpty(item.再審査申出理由コード))
                         {
-                            //Win32API.WindowButtonClickNext(WindowTitle, ButtonClass).ConfigureAwait(false);
                             var next = Win32API.GetTargetControl("給付－レセプトエラー訂正・削除", "ThunderRT6CommandButton", 2);
                             Win32API.ButtonClick(next).ConfigureAwait(false);
                             pMessage = $"【{item.エラー内容}】{item.記号} - {item.番号} {item.氏名_漢字}　⇒　エラーが判別できないためスキップします。";
@@ -184,7 +177,6 @@ namespace Win32APIforRPA
                         }
                         else if (item.再審査申出理由コード == "100019")
                         {
-                            //Win32API.WindowButtonClickNext(WindowTitle, ButtonClass).ConfigureAwait(false);
                             var next = Win32API.GetTargetControl("給付－レセプトエラー訂正・削除", "ThunderRT6CommandButton", 2);
                             Win32API.ButtonClick(next).ConfigureAwait(false);
 
@@ -193,7 +185,6 @@ namespace Win32APIforRPA
                         }
                         else
                         {
-                            //Win32API.WindowButtonClickNext(WindowTitle, ButtonClass).ConfigureAwait(false);
                             var next = Win32API.GetTargetControl("給付－レセプトエラー訂正・削除", "ThunderRT6CommandButton", 2);
                             Win32API.ButtonClick(next).ConfigureAwait(false);
                             pMessage = $"【{item.エラー内容}】{item.記号} - {item.番号} {item.氏名_漢字}　⇒　エラーが判別できないためスキップします。";
@@ -203,10 +194,7 @@ namespace Win32APIforRPA
 
                     else if (item.エラー内容 == "特定疾患等一部負担額設定エラー" | item.エラー内容 == "公費併用の負担金入力です")
                     {
-                        //WindowTokuteiSikkanErrorTeisei(WindowTitle, "NumEditX");
-
-                        //Win32API.WindowButtonClickNext(WindowTitle, ButtonClass).ConfigureAwait(false);
-                        new RPA_saisinsa().SetZeroItibuFutankin();
+                        new RunSaisinsaEntry().SetZeroItibuFutankin();
 
                         var next = Win32API.GetTargetControl("給付－レセプトエラー訂正・削除", "ThunderRT6CommandButton", 16);
                         Win32API.ButtonClick(next).ConfigureAwait(false);
@@ -226,8 +214,6 @@ namespace Win32APIforRPA
                     else if (item.エラー内容 == "未登録ＥＲＲ")
                     {
 
-
-                        //Win32API.WindowButtonClickNext(WindowTitle, ButtonClass).ConfigureAwait(false);
                         var next = Win32API.GetTargetControl("給付－レセプトエラー訂正・削除", "ThunderRT6CommandButton", 2);
                         Win32API.ButtonClick(next).ConfigureAwait(false);
                         pMessage = $"【{item.エラー内容}】{item.記号} - {item.番号} {item.氏名_漢字}　⇒　　加入者の特定ができないためスキップします、目視訂正してください";
@@ -251,7 +237,6 @@ namespace Win32APIforRPA
                             runMouseCursorMoveOnLeftClick(((rect.left + rect.right) / 2), ((rect.bottom + rect.top) / 2), 1000);
 
                             Thread.Sleep(1000);
-                            //Win32API.WindowButtonClickNext(WindowTitle, ButtonClass).ConfigureAwait(false);
                             var next = Win32API.GetTargetControl("給付－レセプトエラー訂正・削除", "ThunderRT6CommandButton", 2);
                             Win32API.ButtonClick(next).ConfigureAwait(false);
 
@@ -264,10 +249,8 @@ namespace Win32APIforRPA
 
                     }
 
-                    else
+                    else //どれにも該当しないエラー
                     {
-                        //どれにも該当しないエラー
-                        //Win32API.WindowButtonClickNext(WindowTitle, ButtonClass).ConfigureAwait(false);
                         var next = Win32API.GetTargetControl("給付－レセプトエラー訂正・削除", "ThunderRT6CommandButton", 2);
                         Win32API.ButtonClick(next).ConfigureAwait(false);
                         pMessage = $"【{item.エラー内容}】{item.記号} - {item.番号} {item.氏名_漢字}　⇒　エラー判別不能のためスキップします";
